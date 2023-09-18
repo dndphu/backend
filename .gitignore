@@ -1,0 +1,7 @@
+/node_modules
+.vscode
+
+src/public/css
+.env
+.lock
+.log
