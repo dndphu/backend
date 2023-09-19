@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const User = require("../model/user");
 const exits = require("../helpers/exits");
+
 class AuthController {
   //[POST] /register
   async register(req, res, next) {
@@ -18,7 +19,8 @@ class AuthController {
       const user = await newUser.save();
       exits.success({ res, data: user });
     } catch (error) {
-      exits.badRequest({ res, error });
+      // exits.badRequest({ res, error });
+      next(error);
     }
   }
 
@@ -30,11 +32,17 @@ class AuthController {
       //not found
       !user && exits.badRequest({ res, message: "Not Found User" });
 
+      const validate = await bcrypt.compare(req.body.password, user.password);
+
+      //password error
+      !validate &&
+        exits.badRequest({ res, message: "Invalid Authentication" });
+
       const { password, ...other } = user._doc;
 
-      exits.success({ req, res, data: other });
+      exits.success({ res, data: other });
     } catch (error) {
-      exits.badRequest({ res, error });
+      next(error);
     }
   }
 }

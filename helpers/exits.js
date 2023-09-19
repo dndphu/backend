@@ -1,7 +1,7 @@
 function badRequest({ req, res, next, error, data = null, message = null }) {
   return res.status(400).send({
     error_code: 400,
-    error_message: message ?? error.message,
+    error_message: message || error.message,
     ...(data && { error_data: data }),
   });
 }
