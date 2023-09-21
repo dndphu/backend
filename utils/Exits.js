@@ -17,7 +17,7 @@ function success({ req, res, next, data }) {
   return res.status(200).json({
     status: "success",
     requestAt: req.requestAt,
-    data,
+    data
   });
 }
 
