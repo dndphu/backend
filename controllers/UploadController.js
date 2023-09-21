@@ -1,5 +1,5 @@
 const User = require("../model/user");
-const exits = require("../helpers/exits");
+const exits = require("../utils/Exits");
 
 class UploadController {
   //[POST] /register

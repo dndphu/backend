@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const User = require("../model/user");
-const exits = require("../helpers/exits");
+const exits = require("../utils/Exits");
+const CustomError = require("../utils/customError");
 
 class AuthController {
   //[POST] /register
@@ -19,9 +20,15 @@ class AuthController {
       const user = await newUser.save();
       exits.success({ req, res, data: user });
     } catch (error) {
-      console.log("error :>> ", error);
+      console.log('error :>> ', error);
       if (error && error.code === 11000) {
-        exits.badRequest({ res, message: "User or Email already exits" });
+        const err = new CustomError(
+          `${Object.keys(error.keyValue)} '${Object.values(
+            error.keyValue
+          )}' already exits`,
+          400
+        );
+        next(err);
       }
       next();
     }

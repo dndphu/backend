@@ -4,6 +4,7 @@ const port = process.env.PORT || 3000;
 const dotenv = require("dotenv").config();
 const path = require("path");
 const morgan = require("morgan");
+const globalErrorHandler = require("./controllers/ErrorController")
 
 // http logger
 app.use(morgan("combined"));
@@ -35,9 +36,7 @@ app.all("*", (req, res, next) => {
   err.statusCode = 404;
   next(err);
 });
-
-const ErrorMiddleware = require("./middlewares/ErrorMiddleware");
-app.use(ErrorMiddleware);
+app.use(globalErrorHandler);
 
 //connect mongodb
 const db = require("./config/db");
