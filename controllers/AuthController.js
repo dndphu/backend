@@ -17,10 +17,13 @@ class AuthController {
       });
 
       const user = await newUser.save();
-      exits.success({ res, data: user });
+      exits.success({ req, res, data: user });
     } catch (error) {
-      // exits.badRequest({ res, error });
-      next(error);
+      console.log("error :>> ", error);
+      if (error && error.code === 11000) {
+        exits.badRequest({ res, message: "User or Email already exits" });
+      }
+      next();
     }
   }
 
@@ -35,12 +38,11 @@ class AuthController {
       const validate = await bcrypt.compare(req.body.password, user.password);
 
       //password error
-      !validate &&
-        exits.badRequest({ res, message: "Invalid Authentication" });
+      !validate && exits.badRequest({ res, message: "Invalid Authentication" });
 
       const { password, ...other } = user._doc;
 
-      exits.success({ res, data: other });
+      exits.success({ req, res, data: other });
     } catch (error) {
       next(error);
     }

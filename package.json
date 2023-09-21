@@ -6,7 +6,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon --inspect src/index.js",
+    "start": "nodemon --inspect index.js",
     "prepare": "husky install",
     "commitlint": "commitlint --edit"
   },
@@ -23,6 +23,7 @@
     "@commitlint/config-conventional": "^17.7.0",
     "husky": "^8.0.3",
     "lint-staged": "^14.0.1",
+    "morgan": "^1.10.0",
     "nodemon": "^3.0.1",
     "prettier": "^3.0.3"
   },
