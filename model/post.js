@@ -27,4 +27,5 @@ const PostSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Category", PostSchema);
+const Post = mongoose.model("Post", PostSchema);
+module.exports = Post;

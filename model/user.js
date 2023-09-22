@@ -5,7 +5,14 @@ const UserSchema = new mongoose.Schema(
     username: {
       type: String,
       require: [true, "Please enter username!"],
+      lowercase: true,
       unique: true,
+      validate: {
+        validator: function (v) {
+          return  !validator.isEmpty(v);
+        },
+        message: "Please input username!",
+      },
     },
     email: {
       type: String,
@@ -17,7 +24,8 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
       required: [true, "Please enter a password!"],
-      minLength: 8,
+      minLength: 6,
+
     },
     avatar: {
       type: String,
@@ -27,4 +35,5 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("User", UserSchema);
+const User = mongoose.model("User", UserSchema);
+module.exports = User;

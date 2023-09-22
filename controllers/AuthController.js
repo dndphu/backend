@@ -2,35 +2,52 @@ const bcrypt = require("bcrypt");
 const User = require("../model/user");
 const exits = require("../utils/Exits");
 const CustomError = require("../utils/customError");
-
+var validator = require("validator");
 class AuthController {
   //[POST] /register
   async register(req, res, next) {
-    try {
-      const salt = await bcrypt.genSalt(10);
-      const { username, email, password } = req.body;
-      const hashedPass = await bcrypt.hash(password, salt);
+    const { username, email, password } = req.body;
 
-      const newUser = new User({
-        username,
-        email,
-        password: hashedPass,
-      });
+    const errValidate = new CustomError(
+      `Please enter a ${!username ? "username" : ""} ${!email ? "email" : ""} ${
+        !password ? "password" : ""
+      }`,
+      400
+    );
+    //check exits user email password
+    const validInput = username && email && password;
+    !validInput && errValidate && next(errValidate);
+    // end check exits user, email, password
 
-      const user = await newUser.save();
-      exits.success({ req, res, data: user });
-    } catch (error) {
-      console.log('error :>> ', error);
-      if (error && error.code === 11000) {
-        const err = new CustomError(
-          `${Object.keys(error.keyValue)} '${Object.values(
-            error.keyValue
-          )}' already exits`,
-          400
-        );
-        next(err);
+    //valid  email
+    const validateEmail = validator.isEmail(email);
+    const errEmail = new CustomError("Please enter a valid email!", 400);
+    !validateEmail && errEmail && next(errEmail);
+    //end valid email
+
+    //valid min length password
+    const validatePassword = validator.isLength(password, { min: 6 });
+    const errPassword = new CustomError(
+      "Please enter a password of 6 characters",
+      400
+    );
+    !validatePassword && errPassword && next(errPassword);
+    // end valid min-length email
+    if (validInput && validatePassword && validateEmail) {
+      console.log("chay do dang ki ne");
+      try {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPass = await bcrypt.hash(password, salt);
+        const newUser = new User({
+          username,
+          email,
+          password: hashedPass,
+        });
+        const user = await newUser.save();
+        exits.success({ req, res, data: user });
+      } catch (error) {
+        next(error);
       }
-      next();
     }
   }
 
