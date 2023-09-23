@@ -2,7 +2,6 @@ const bcrypt = require("bcrypt");
 const User = require("../model/user");
 const exits = require("../utils/Exits");
 const CustomError = require("../utils/customError");
-const JWT = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
 const generateAccessToken = require("../utils/generationAccessToken");
 class AuthController {
