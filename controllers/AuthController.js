@@ -4,13 +4,14 @@ const exits = require("../utils/Exits");
 const CustomError = require("../utils/customError");
 const JWT = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
+const generateAccessToken = require("../utils/generationAccessToken");
 class AuthController {
   //[POST] /register
   async register(req, res, next) {
     const { username, email, password } = req.body;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      const err = new CustomError(JSON.stringify(errors), 400, 'array');
+      const err = new CustomError(JSON.stringify(errors), 400, "array");
       next(err);
     } else {
       try {
@@ -46,8 +47,9 @@ class AuthController {
       const errPassword = new CustomError("Not found user", 404);
       !validate && errPassword && next(errPassword);
 
+      const token = generateAccessToken({ username: req.body.username });
       const { password, ...other } = user._doc;
-
+      other.token = token;
       exits.success({ req, res, data: other });
     } catch (error) {
       next(error);
