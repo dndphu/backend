@@ -35,14 +35,14 @@ app.use((req, res, next) => {
   next();
 });
 
-//config router
-const routes = require("./routers");
-// route(app);
-app.use("/", routes);
 app.get("/favicon.ico", (req, res) => res.status(204));
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
+//config router
+const route = require("./routers");
+route(app);
+
 app.use(globalErrorHandler);
 app.all("*", (req, res, next) => {
   const err = new CustomError(
