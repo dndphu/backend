@@ -1,6 +1,6 @@
 const User = require("../model/user");
 const exits = require("../utils/Exits");
-const Post = require("../model/Post");
+// const Post = require("../model/Post");
 
 const CustomError = require("../utils/customError");
 class UserController {
@@ -22,7 +22,7 @@ class UserController {
       const user = await User.findById(req.params.id);
       try {
         //delete post of user
-        await Post.deleteMany({ username: user.username });
+        // await Post.deleteMany({ username: user.username });
         await User.findByIdAndDelete(req.params.id);
 
         exits.success({ req, res, data: "Deleted success" });
