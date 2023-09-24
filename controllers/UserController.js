@@ -5,6 +5,17 @@ const exits = require("../utils/Exits");
 const CustomError = require("../utils/customError");
 class UserController {
   //[GET] /user/:id
+  async getAll(req, res, next) {
+    try {
+      const users = await User.find().select('-password');
+      exits.success({ req, res, data: users });
+    } catch (error) {
+      const err = new CustomError("Not found user", 404);
+      next(err);
+    }
+  }
+
+  //[GET] /user/:id
   async getUser(req, res, next) {
     try {
       const user = await User.findById(req.params.id);
@@ -38,36 +49,31 @@ class UserController {
 
   //[PUT] /user/:id
   async updateUser(req, res, next) {
-      if (req.body.userId === req.params.id) {
+    if (req.body.userId === req.params.id) {
+      if (req.body.password) {
+        const salt = await bcrypt.genSalt(10);
+        req.body.password = await bcrypt.hash(req.body.password, salt);
+      }
 
-    if (req.body.password) {
-      const salt = await bcrypt.genSalt(10);
-      req.body.password = await bcrypt.hash(req.body.password, salt);
-    }
+      try {
+        const updatedUser = await User.findByIdAndUpdate(
+          req.params.id,
+          {
+            $set: req.body,
+          },
+          { new: true }
+        );
 
-    try {
-      const updatedUser = await User.findByIdAndUpdate(
-        req.params.id,
-        {
-          $set: req.body,
-        },
-        { new: true }
-      );
-
-      exits.success({ req, res, data: updatedUser });
-    } catch (error) {
-      const err = new CustomError("Something Wrong", 400);
+        exits.success({ req, res, data: updatedUser });
+      } catch (error) {
+        const err = new CustomError("Something Wrong", 400);
+        next(err);
+      }
+    } else {
+      const err = new CustomError("You can not update your account", 400);
       next(err);
     }
-
-  } else {
-         const err = new CustomError("You can not update your account", 400);
-         next(err);
-
   }
-  }
-
-
 }
 
 module.exports = new UserController();

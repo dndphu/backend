@@ -39,11 +39,12 @@ app.get("/favicon.ico", (req, res) => res.status(204));
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
+
 //config router
 const route = require("./routers");
 route(app);
 
-app.use(globalErrorHandler);
+
 app.all("*", (req, res, next) => {
   const err = new CustomError(
     `Can't find ${req.originalUrl} on the server!`,
@@ -51,6 +52,7 @@ app.all("*", (req, res, next) => {
   );
   next(err);
 });
+app.use(globalErrorHandler);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
