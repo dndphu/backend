@@ -39,6 +39,9 @@ app.use((req, res, next) => {
 const route = require("./routers");
 route(app);
 
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
 app.use(globalErrorHandler);
 app.all("*", (req, res, next) => {
   // const err = new Error(`Can't find ${req.originalUrl} on the server!`);
