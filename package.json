@@ -34,5 +34,8 @@
   "lint-staged": {
     "src/**/*.{js,json,scss}": "prettier --double-quote --trailing-comma all --write"
   },
-  "postinstall": "husky install"
+  "postinstall": "husky install",
+  "engines": {
+    "node": ">=14.20.1"
+  }
 }
