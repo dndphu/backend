@@ -36,20 +36,15 @@ app.use((req, res, next) => {
 });
 
 //config router
-const authRouter = require("./routers/auth");
-app.use("/auth", authRouter);
-// const route = require("./routers");
+const routes = require("./routers");
 // route(app);
-
+app.use("/", routes);
 app.get("/favicon.ico", (req, res) => res.status(204));
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 app.use(globalErrorHandler);
 app.all("*", (req, res, next) => {
-  // const err = new Error(`Can't find ${req.originalUrl} on the server!`);
-  // err.status = "fail";
-  // err.statusCode = 404;
   const err = new CustomError(
     `Can't find ${req.originalUrl} on the server!`,
     404
