@@ -36,7 +36,7 @@ app.use((req, res, next) => {
 });
 
 //config router
-const route = require("./api");
+const route = require("./routers");
 route(app);
 app.get("/favicon.ico", (req, res) => res.status(204));
 app.get("/", (req, res) => {
