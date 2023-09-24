@@ -15,7 +15,7 @@ const Multer = require("../config/multer.js");
 // });
 // const upload = multer({ storage: storage });
 
-const uploadController = require("../controllers/UploadController");
+const uploadController = require("../controllers/UploadController.js");
 
 router.post("/upload", Multer.upload.single("file"), uploadController.uploadSingle);
 
