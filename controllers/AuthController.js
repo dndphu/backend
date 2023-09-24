@@ -7,7 +7,7 @@ const generateAccessToken = require("../utils/generationAccessToken");
 class AuthController {
   //[POST] /register
   async register(req, res, next) {
-    const { username, email, password } = req.body;
+    const { username, email, password: pwBody } = req.body;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       const err = new CustomError(JSON.stringify(errors), 400, "array");
@@ -15,20 +15,19 @@ class AuthController {
     } else {
       try {
         const salt = await bcrypt.genSalt(10);
-        const hashedPass = await bcrypt.hash(password, salt);
+        const hashedPass = await bcrypt.hash(pwBody, salt);
         const newUser = new User({
           username,
           email,
           password: hashedPass,
         });
         const user = await newUser.save();
-        exits.success({ req, res, data: user });
+        const { password, ...other } = user._doc;
+        exits.success({ req, res, data: other });
       } catch (error) {
         next(error);
       }
     }
-
-    // }
   }
 
   // [POST] /login
@@ -55,5 +54,4 @@ class AuthController {
     }
   }
 }
-
 module.exports = new AuthController();

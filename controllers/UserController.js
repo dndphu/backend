@@ -4,7 +4,7 @@ const exits = require("../utils/Exits");
 
 const CustomError = require("../utils/customError");
 class UserController {
-  //[GET] /user/:id
+  //[GET] /user
   async getAll(req, res, next) {
     try {
       const users = await User.find().select('-password');
