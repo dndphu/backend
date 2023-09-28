@@ -1,4 +1,4 @@
-const User = require("../model/user");
+const User = require("../models/user.model");
 const exits = require("../utils/Exits");
 // const Post = require("../model/Post");
 

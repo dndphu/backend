@@ -1,8 +1,8 @@
 const express = require("express");
 
-const authRouter = require("./auth");
-const uploadRouter = require("./upload");
-const userRouter = require("./user");
+const authRouter = require("./auth.routes");
+const uploadRouter = require("./upload.routes");
+const userRouter = require("./user.routes");
 
 module.exports = function route(app) {
   app.use("/auth", authRouter);

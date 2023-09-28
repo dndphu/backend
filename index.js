@@ -6,7 +6,7 @@ const path = require("path");
 const morgan = require("morgan");
 
 const CustomError = require("./utils/customError");
-const globalErrorHandler = require("./controllers/ErrorController");
+const globalErrorHandler = require("./controllers/error.controller");
 
 
 //  const token = require('crypto').randomBytes(64).toString('hex')
@@ -41,7 +41,7 @@ app.get("/", (req, res) => {
 });
 
 //config router
-const route = require("./routers");
+const route = require("./routers/index.routes");
 route(app);
 
 

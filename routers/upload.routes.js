@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Multer = require("../config/multer.js");
+const Multer = require("../config/multer.config.js");
 
 // const multer = require("multer");
 
@@ -15,7 +15,7 @@ const Multer = require("../config/multer.js");
 // });
 // const upload = multer({ storage: storage });
 
-const uploadController = require("../controllers/UploadController.js");
+const uploadController = require("../controllers/upload.controller.js");
 
 router.post("/upload", Multer.upload.single("file"), uploadController.uploadSingle);
 

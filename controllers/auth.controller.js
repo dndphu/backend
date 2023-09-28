@@ -1,11 +1,15 @@
 const bcrypt = require("bcrypt");
-const User = require("../model/user");
 const exits = require("../utils/Exits");
 const CustomError = require("../utils/customError");
 const { validationResult } = require("express-validator");
 const generateAccessToken = require("../utils/generationAccessToken");
+const jwt = require("jsonwebtoken");
+const db = require("../models");
+const { user: User, refreshToken: RefreshToken } = db;
+const config = require("../config/auth.config");
+
 class AuthController {
-  //[POST] /register
+  //[POST] /auth/register
   async register(req, res, next) {
     const { username, email, password: pwBody } = req.body;
     const errors = validationResult(req);
@@ -30,7 +34,7 @@ class AuthController {
     }
   }
 
-  // [POST] /login
+  // [POST] /auth/login
   async login(req, res, next) {
     try {
       const user = await User.findOne({ username: req.body.username });
@@ -46,12 +50,63 @@ class AuthController {
       !validate && errPassword && next(errPassword);
 
       const token = generateAccessToken({ username: req.body.username });
+      const refreshToken = await RefreshToken.createToken(user);
+
       const { password, ...other } = user._doc;
       other.token = token;
+      other.refreshToken = refreshToken;
+
       exits.success({ req, res, data: other });
     } catch (error) {
       next(error);
     }
   }
+
+  // [POST] /auth/refreshtoken
+  async refreshToken(req, res) {
+    const { refreshToken: requestToken } = req.body;
+    if (requestToken == null) {
+      // return res.status(403).json({ message: "Refresh Token is required!" });
+      const err = new CustomError("Refresh Token is required!", 403);
+      next(err);
+    }
+
+    try {
+      let refreshToken = await RefreshToken.findOne({ token: requestToken });
+
+      if (!refreshToken) {
+        const err = new CustomError("Refresh token is not exits", 403);
+        next(err);
+        return;
+      }
+
+      if (RefreshToken.verifyExpiration(refreshToken)) {
+        RefreshToken.findByIdAndRemove(refreshToken._id, {
+          useFindAndModify: false,
+        }).exec();
+
+        const err = new CustomError(
+          "Refresh token was expired. Please make a new signin request",
+          403
+        );
+        next(err);
+        return;
+      }
+
+      const token = generateAccessToken({
+        username: refreshToken.user.username,
+      });
+
+      const result = {
+        token: token,
+        refreshToken: refreshToken.token,
+      };
+
+      return exits.success({ req, res, data: result });
+    } catch (err) {
+      next(err);
+    }
+  }
 }
+
 module.exports = new AuthController();
