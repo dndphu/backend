@@ -54,9 +54,23 @@ class AuthController {
         user: user._id,
       });
 
-      let refreshToken = dbRefreshToken
-        ? dbRefreshToken.token
-        : await RefreshToken.createToken(user);
+
+      let refreshToken;
+      if (dbRefreshToken) {
+        if (RefreshToken.verifyExpiration(dbRefreshToken)) {
+          //RefreshToken expires, create new one
+          await RefreshToken.findByIdAndRemove(dbRefreshToken._id, {
+            useFindAndModify: false,
+          }).exec();
+          refreshToken = await RefreshToken.createToken(user);
+        } else {
+          //RefreshToken is still valid
+          refreshToken = dbRefreshToken.token;
+        }
+      } else {
+        // New RefreshToken
+        refreshToken = await RefreshToken.createToken(user);
+      }
 
       const { password, ...other } = user._doc;
       other.token = token;
