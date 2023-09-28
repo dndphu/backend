@@ -3,10 +3,8 @@ const exits = require("../utils/Exits");
 const CustomError = require("../utils/customError");
 const { validationResult } = require("express-validator");
 const generateAccessToken = require("../utils/generationAccessToken");
-const jwt = require("jsonwebtoken");
 const db = require("../models");
 const { user: User, refreshToken: RefreshToken } = db;
-const config = require("../config/auth.config");
 
 class AuthController {
   //[POST] /auth/register
@@ -49,8 +47,16 @@ class AuthController {
       const errPassword = new CustomError("Not found user", 404);
       !validate && errPassword && next(errPassword);
 
-      const token = generateAccessToken({ username: req.body.username });
-      const refreshToken = await RefreshToken.createToken(user);
+      const token = generateAccessToken(user._id);
+
+      //check refresh token is exits
+      const dbRefreshToken = await RefreshToken.findOne({
+        user: user._id,
+      });
+
+      let refreshToken = dbRefreshToken
+        ? dbRefreshToken.token
+        : await RefreshToken.createToken(user);
 
       const { password, ...other } = user._doc;
       other.token = token;
@@ -63,7 +69,7 @@ class AuthController {
   }
 
   // [POST] /auth/refreshtoken
-  async refreshToken(req, res) {
+  async refreshToken(req, res, next) {
     const { refreshToken: requestToken } = req.body;
     if (requestToken == null) {
       // return res.status(403).json({ message: "Refresh Token is required!" });
@@ -92,10 +98,7 @@ class AuthController {
         next(err);
         return;
       }
-
-      const token = generateAccessToken({
-        username: refreshToken.user.username,
-      });
+      const token = generateAccessToken(refreshToken.user._id);
 
       const result = {
         token: token,
