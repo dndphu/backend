@@ -11,6 +11,9 @@ var storage = multer.diskStorage({
     cb(null, uniqueSuffix + "-" + file.originalname);
   },
 });
+
+// var storage = multer.memoryStorage();
+
 var upload = multer({
   storage: storage,
   limits: {
@@ -18,5 +21,6 @@ var upload = multer({
     fieldSize: 10 * 1024 * 1024, // No larger than 10mb
   },
 });
+
 
 module.exports = { storage, upload };
