@@ -11,7 +11,7 @@ db.category = require("./category.model");
 // db.role = require("./role.model");
 
 db.refreshToken = require("./refreshToken.model");
-
+db.image = require("./image.model")
 // db.ROLES = ["user", "admin", "moderator"];
 
 module.exports = db;

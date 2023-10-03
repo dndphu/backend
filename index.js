@@ -9,6 +9,13 @@ const CustomError = require("./utils/customError");
 const globalErrorHandler = require("./controllers/error.controller");
 
 
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
+const { upload } = require("./config/multer.config");
+// app.use(upload.array());
+
 //  const token = require('crypto').randomBytes(64).toString('hex')
 
 // http logger
@@ -36,14 +43,14 @@ app.use((req, res, next) => {
 });
 
 app.get("/favicon.ico", (req, res) => res.status(204));
-app.get("/", (req, res) => {
-  res.send("Hello World!");
+app.get("/", function (req, res) {
+  res.sendFile(path.join(__dirname , "/views/index.html"));
 });
+
 
 //config router
 const route = require("./routers/index.routes");
 route(app);
-
 
 app.all("*", (req, res, next) => {
   const err = new CustomError(
@@ -57,4 +64,3 @@ app.use(globalErrorHandler);
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
-
