@@ -13,7 +13,7 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
-const { upload } = require("./config/multer.config");
+// const { upload } = require("./middlewares/multer.middleware");
 // app.use(upload.array());
 
 //  const token = require('crypto').randomBytes(64).toString('hex')
